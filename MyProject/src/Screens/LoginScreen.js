@@ -17,7 +17,7 @@ import ImageBg from '../Images/BG-image.jpg';
 export default function LoginScreen() {
   const navigation = useNavigation();
   // const {
-  //   params: { userLogin, userEmail, userPassword },
+  //   params: { userLogin },
   // } = useRoute();
 
   const [email, setEmail] = useState('');
@@ -26,7 +26,7 @@ export default function LoginScreen() {
 
   const onLogin = () => {
     Alert.alert(`Welcome, ${email}`);
-    // console.log(`email: ${email}, password: ${password}`);
+    navigation.navigate('Home');
     setEmail('');
     setPassword('');
   };
