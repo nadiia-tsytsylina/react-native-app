@@ -28,7 +28,7 @@ export default function RegistrationScreen() {
 
   const onRegistrate = () => {
     Alert.alert(`${login}, thank you for registration`);
-    navigation.navigate('Login');
+    navigation.navigate('Home', { login: login, email: email });
     setLogin('');
     setEmail('');
     setPassword('');

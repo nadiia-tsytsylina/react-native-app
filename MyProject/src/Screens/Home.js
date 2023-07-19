@@ -1,4 +1,6 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { useState } from 'react';
 import { StyleSheet, Pressable, Image, View } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import PostScreen from './PostsScreen';
@@ -10,13 +12,64 @@ import GoBackIcon from '../Images/go-back.png';
 const Tabs = createBottomTabNavigator();
 
 export default function Home() {
+  const navigation = useNavigation();
+
+  const onLogout = () => {
+    navigation.navigate('Login');
+  };
+
+  const onReturn = () => {
+    navigation.navigate('PostScreen');
+  };
+
+  const postScreenOptions = {
+    title: 'Публікації',
+    headerStyle: {
+      backgroundColor: '#ffffff',
+      shadowColor: 'rgba(0,0,0,0.3)',
+      height: 88,
+    },
+    headerTintColor: '#212121',
+    headerTitleStyle: {
+      marginLeft: 110,
+      fontFamily: 'Roboto-Medium',
+      fontSize: 22,
+    },
+    headerRight: () => (
+      <Pressable style={styles.logOutBtn} onPress={onLogout}>
+        <Image source={LogOutIcon} style={styles.icon} />
+      </Pressable>
+    ),
+  };
+
+  const createPostScreenOptions = {
+    title: 'Створити публікацію',
+    headerStyle: {
+      backgroundColor: '#ffffff',
+      shadowColor: 'rgba(0,0,0,0.3)',
+      height: 88,
+    },
+    headerTintColor: '#212121',
+    headerTitleStyle: {
+      marginLeft: 25,
+      fontFamily: 'Roboto-Medium',
+      fontSize: 22,
+    },
+    headerLeft: () => (
+      <Pressable style={styles.goBackBtn} onPress={onReturn}>
+        <Image source={GoBackIcon} style={styles.icon} />
+      </Pressable>
+    ),
+  };
+
   return (
     <Tabs.Navigator
       initialRouteName="PostScreen"
       backBehavior="order"
       tabBarOptions={{
         showLabel: false,
-        activeTintColor: '#FF6C00',
+        activeTintColor: '#FFFFFF',
+        activeBackgroundColor: '#FF6C00',
         inactiveTintColor: 'gray',
       }}
       screenOptions={({ route }) => ({
@@ -26,7 +79,10 @@ export default function Home() {
           paddingRight: 60,
           shadowColor: 'rgba(0,0,0,0.3)',
         },
-        // tabBarButton: (props) => <TabButton {...props} />,
+        tabBarItemStyle: {
+          margin: 5,
+          borderRadius: 20,
+        },
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
           let routeName = route.name;
@@ -47,58 +103,20 @@ export default function Home() {
         name="PostScreen"
         component={PostScreen}
         options={{
-          title: 'Публікації',
-          headerStyle: {
-            backgroundColor: '#ffffff',
-            shadowColor: 'rgba(0,0,0,0.3)',
-            height: 88,
-          },
-          headerTintColor: '#212121',
-          headerTitleStyle: {
-            marginLeft: 110,
-            fontFamily: 'Roboto-Medium',
-            fontSize: 22,
-          },
-          headerRight: () => (
-            <Pressable
-              style={styles.logOutBtn}
-              onPress={() => console.log('pressed')}
-            >
-              <Image source={LogOutIcon} style={styles.icon} />
-            </Pressable>
-          ),
+          ...postScreenOptions,
         }}
       />
       <Tabs.Screen
         name="CreatePostScreen"
         component={CreatePostScreen}
         options={{
-          title: 'Створити публікацію',
-          headerStyle: {
-            backgroundColor: '#ffffff',
-            shadowColor: 'rgba(0,0,0,0.3)',
-            height: 88,
-          },
-          headerTintColor: '#212121',
-          headerTitleStyle: {
-            marginLeft: 25,
-            fontFamily: 'Roboto-Medium',
-            fontSize: 22,
-          },
-          headerLeft: () => (
-            <Pressable
-              style={styles.goBackBtn}
-              onPress={() => console.log('pressed')}
-            >
-              <Image source={GoBackIcon} style={styles.icon} />
-            </Pressable>
-          ),
+          ...createPostScreenOptions,
         }}
       />
       <Tabs.Screen
         name="ProfileScreen"
         component={ProfileScreen}
-        options={{}}
+        options={{ headerShown: false }}
       />
     </Tabs.Navigator>
   );
