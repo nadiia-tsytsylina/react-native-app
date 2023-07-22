@@ -61,11 +61,11 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 30,
+    paddingTop: 120,
   },
   accountImage: {
     alignSelf: 'center',
-    position: 'relative',
+    position: 'absolute',
     width: 120,
     height: 120,
     backgroundColor: '#F6F6F6',
