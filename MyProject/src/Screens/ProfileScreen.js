@@ -14,7 +14,8 @@ import {
 } from 'react-native';
 import { useState } from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import ImageBg from '../Images/BG-image.jpg';
+import Post from '../Components/Post';
+import posts from '../Data/postsList';
 import UserPhoto from '../Images/user-photo.jpg';
 import DeleteIcon from '../Images/delete-icon.png';
 import AddIcon from '../Images/add-icon.png';
@@ -35,21 +36,24 @@ export default function ProfileScreen() {
 
   return (
     <View style={styles.container}>
-      <ImageBackground source={ImageBg} style={styles.image} resizeMode="cover">
-        <View style={styles.profileContainer}>
-          {/* <View style={styles.accountImage}>
-            {userPhoto && <Image source={UserPhoto} style={styles.userPhoto} />}
-            <Pressable style={styles.addBtn} onPress={onAddPhoto}>
-              {!userPhoto && <Image source={AddIcon} style={styles.icon} />}
-              {userPhoto && <Image source={DeleteIcon} style={styles.icon} />}
-            </Pressable>
-          </View>
-          <Pressable style={styles.logOutBtn} onPress={onLogout}>
-            <Image source={LogOutIcon} style={styles.icon} />
-          </Pressable> */}
-          <Text style={styles.userName}>Natali Romanova</Text>
-        </View>
-      </ImageBackground>
+      <View style={styles.accountImage}>
+        {userPhoto && <Image source={UserPhoto} style={styles.userPhoto} />}
+        <Pressable style={styles.addBtn} onPress={onAddPhoto}>
+          {!userPhoto && <Image source={AddIcon} style={styles.icon} />}
+          {userPhoto && <Image source={DeleteIcon} style={styles.icon} />}
+        </Pressable>
+      </View>
+      <View style={styles.profileContainer}>
+        <Pressable style={styles.logOutBtn} onPress={onLogout}>
+          <Image source={LogOutIcon} style={styles.icon} />
+        </Pressable>
+        <Text style={styles.userName}>Natali Romanova</Text>
+      </View>
+      <ScrollView style={styles.mainPostContainer}>
+        {posts.map((post) => {
+          return <Post post={post} />;
+        })}
+      </ScrollView>
     </View>
   );
 }
@@ -57,30 +61,17 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  image: {
-    flex: 1,
-    justifyContent: 'flex-end',
-  },
-  profileContainer: {
-    position: 'relative',
-    paddingTop: 92,
-    paddingLeft: 16,
-    paddingRight: 16,
-    paddingBottom: 45,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderTopLeftRadius: 25,
-    borderTopRightRadius: 25,
+    paddingTop: 30,
   },
   accountImage: {
+    alignSelf: 'center',
+    position: 'relative',
     width: 120,
     height: 120,
     backgroundColor: '#F6F6F6',
-    position: 'relative',
-    bottom: 150,
+    top: 60,
     borderRadius: 16,
+    zIndex: 2,
   },
   userPhoto: {
     width: 120,
@@ -92,10 +83,28 @@ const styles = StyleSheet.create({
     width: 25,
     height: 25,
   },
+  profileContainer: {
+    backgroundColor: '#FFFFFF',
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+    paddingTop: 92,
+    paddingLeft: 16,
+    paddingRight: 16,
+    paddingBottom: 32,
+    alignItems: 'center',
+  },
+
   logOutBtn: { position: 'absolute', top: 22, left: 320 },
   userName: {
     fontFamily: 'Roboto-Medium',
     fontSize: 30,
     color: '#212121',
+  },
+  mainPostContainer: {
+    backgroundColor: '#ffffff',
+    paddingLeft: 16,
+    paddingRight: 16,
   },
 });

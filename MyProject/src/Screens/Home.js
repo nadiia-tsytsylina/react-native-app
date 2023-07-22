@@ -1,7 +1,6 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { useState } from 'react';
-import { StyleSheet, Pressable, Image, View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { StyleSheet, Pressable, Image } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import PostScreen from './PostsScreen';
 import CreatePostScreen from './CreatePostsScreen';
@@ -55,6 +54,10 @@ export default function Home() {
       fontFamily: 'Roboto-Medium',
       fontSize: 22,
     },
+    tabBarHideOnKeyboard: 'true',
+    tabBarStyle: {
+      height: 0,
+    },
     headerLeft: () => (
       <Pressable style={styles.goBackBtn} onPress={onReturn}>
         <Image source={GoBackIcon} style={styles.icon} />
@@ -75,9 +78,11 @@ export default function Home() {
       screenOptions={({ route }) => ({
         tabBarStyle: {
           height: 50,
+          backgroundColor: '#ffffff',
           paddingLeft: 60,
           paddingRight: 60,
           shadowColor: 'rgba(0,0,0,0.3)',
+          borderTopWidth: 0,
         },
         tabBarItemStyle: {
           margin: 5,

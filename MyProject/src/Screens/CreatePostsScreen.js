@@ -10,65 +10,166 @@ import {
   TouchableWithoutFeedback,
   Pressable,
   Alert,
+  TouchableOpacity,
 } from 'react-native';
-import { useState } from 'react';
-import Camera from '../Images/camera.png';
+import React, { useState, useEffect } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { Camera } from 'expo-camera';
+import * as MediaLibrary from 'expo-media-library';
+import * as Location from 'expo-location';
+import uuid from 'react-native-uuid';
+import posts from '../Data/postsList';
+import CameraImg from '../Images/camera.png';
 import Map from '../Images/map-pin.png';
+import Trash from '../Images/trash.png';
 
 export default function CreatePostScreen() {
+  const navigation = useNavigation();
+  const [hasPermission, setHasPermission] = useState(null);
+  const [type, setType] = useState(Camera.Constants.Type.back);
   const [name, setName] = useState('');
   const [place, setPlace] = useState('');
+  const [uriImg, setUriImg] = useState(null);
+  const [location, setLocation] = useState(null);
+  const [cameraRef, setCameraRef] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        console.log('Permission to access location was denied');
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      const coordinations = {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      };
+      setLocation(coordinations);
+    })();
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      const { status } = await Camera.requestCameraPermissionsAsync();
+      await MediaLibrary.requestPermissionsAsync();
+      setHasPermission(status === 'granted');
+    })();
+  }, []);
+
+  if (hasPermission === null) {
+    return <View />;
+  }
+  if (hasPermission === false) {
+    return <Text>No access to camera</Text>;
+  }
+
+  const makePhoto = async () => {
+    if (cameraRef) {
+      const { uri } = await cameraRef.takePictureAsync();
+      await MediaLibrary.createAssetAsync(uri);
+      setUriImg(uri);
+    }
+  };
+
+  const reset = () => {
+    setName('');
+    setPlace('');
+    setUriImg(null);
+  };
+
+  const handleSubmit = () => {
+    const post = {
+      id: uuid.v4(),
+      name: name,
+      place: place,
+      location: location,
+      comments: [],
+      likes: 0,
+      image: { uri: uriImg },
+    };
+    posts.push(post);
+    reset();
+    navigation.navigate('PostScreen');
+  };
+
   return (
-    <ScrollView style={styles.container}>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          keyboardVerticalOffset="-260"
+          keyboardVerticalOffset={Platform.OS === 'ios' ? '-250' : '-250'}
         >
-          <View style={styles.imageContainer}>
-            <Image source={Camera} style={styles.cameraImg} />
-          </View>
-          <Text style={styles.text}>Завантажте фото</Text>
-          <View style={styles.inputBox}></View>
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={styles.input}
-              onChangeText={setName}
-              value={name}
-              placeholder="Назва..."
-              placeholderTextColor="#BDBDBD"
-              inputMode="text"
-            ></TextInput>
+          {uriImg ? (
+            <Image source={{ uri: uriImg }} style={styles.imageContainer} />
+          ) : (
+            <Camera
+              style={styles.imageContainer}
+              type={type}
+              ref={setCameraRef}
+            >
+              <View style={styles.photoView}>
+                <Pressable style={styles.cameraBtn} onPress={makePhoto}>
+                  <Image source={CameraImg} style={styles.cameraImg} />
+                </Pressable>
+              </View>
+            </Camera>
+          )}
+          {uriImg && <Text style={styles.text}>Редагувати фото</Text>}
+          {!uriImg && <Text style={styles.text}>Завантажте фото</Text>}
+          <View style={styles.inputBox}>
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.input}
+                onChangeText={setName}
+                value={name}
+                placeholder="Назва..."
+                placeholderTextColor="#BDBDBD"
+                inputMode="text"
+              ></TextInput>
+            </View>
+
+            <View style={styles.inputContainer}>
+              <Image source={Map} />
+              <TextInput
+                style={styles.input}
+                onChangeText={setPlace}
+                value={place}
+                placeholder="Місцевість..."
+                placeholderTextColor="#BDBDBD"
+                inputMode="text"
+              ></TextInput>
+            </View>
           </View>
 
-          <View style={styles.inputContainer}>
-            <Image source={Map} />
-            <TextInput
-              style={styles.input}
-              onChangeText={setPlace}
-              value={place}
-              placeholder="Місцевість..."
-              placeholderTextColor="#BDBDBD"
-              inputMode="text"
-            ></TextInput>
-          </View>
-          <Pressable
-            style={styles.mainBtn}
-            onPress={() => Alert.alert('clicked')}
-          >
-            <Text style={styles.mainBtnText}>Опубліковати</Text>
+          {uriImg && name && place ? (
+            <Pressable style={styles.mainBtn} onPress={handleSubmit}>
+              <Text style={styles.mainBtnText}>Опубліковати</Text>
+            </Pressable>
+          ) : (
+            <Pressable
+              style={styles.disabledMainBtn}
+              onPress={() => {
+                Alert.alert('Please fill all folders');
+              }}
+            >
+              <Text style={styles.disabledBtnText}>Опубліковати</Text>
+            </Pressable>
+          )}
+          <Pressable style={styles.deleteBtn} onPress={reset}>
+            <Image source={Trash} />
           </Pressable>
         </KeyboardAvoidingView>
-      </TouchableWithoutFeedback>
-    </ScrollView>
+      </ScrollView>
+    </TouchableWithoutFeedback>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#fff',
+    flexGrow: 1,
+    backgroundColor: '#ffffff',
     paddingTop: 32,
-    paddingBottom: 32,
     paddingLeft: 16,
     paddingRight: 16,
   },
@@ -82,9 +183,22 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 8,
   },
+  photoView: {
+    backgroundColor: 'transparent',
+    justifyContent: 'center',
+    borderRadius: 8,
+  },
   cameraImg: {
     width: 24,
     height: 24,
+  },
+  cameraBtn: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 60,
+    height: 60,
+    backgroundColor: 'rgba(255,255,255,0.3)',
+    borderRadius: 50,
   },
   text: {
     marginTop: 8,
@@ -124,5 +238,31 @@ const styles = StyleSheet.create({
   mainBtnText: {
     fontSize: 16,
     color: '#ffffff',
+  },
+  disabledMainBtn: {
+    alignItems: 'center',
+    width: '100%',
+    padding: 16,
+    fontStyle: 'Roboto-Regular',
+    fontSize: 16,
+    backgroundColor: '#F6F6F6',
+    borderRadius: 100,
+    marginTop: 27,
+  },
+  disabledBtnText: {
+    fontSize: 16,
+    color: '#BDBDBD',
+  },
+  deleteBtn: {
+    display: 'flex',
+    backgroundColor: '#F6F6F6',
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 70,
+    height: 40,
+    marginTop: 45,
+    marginLeft: 'auto',
+    marginRight: 'auto',
   },
 });
