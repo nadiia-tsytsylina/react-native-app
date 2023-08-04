@@ -1,16 +1,20 @@
 import { View, ScrollView, StyleSheet, Image, Text } from 'react-native';
+import { useSelector } from 'react-redux';
+import { getUser, getPosts } from '../redux/selectors';
 import Post from '../Components/Post';
-import posts from '../Data/postsList';
 import UserPhoto from '../Images/user-photo.jpg';
 
 export default function PostScreen() {
+  const user = useSelector(getUser);
+  const posts = useSelector(getPosts);
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.accountView}>
         <Image source={UserPhoto} style={styles.userImg} />
         <View style={styles.textView}>
-          <Text style={styles.userLogin}>Natali Romanova</Text>
-          <Text style={styles.userEmail}>email@example.com</Text>
+          <Text style={styles.userLogin}>{user.login}</Text>
+          <Text style={styles.userEmail}>{user.email}</Text>
         </View>
       </View>
       <View style={styles.mainPostContainer}>

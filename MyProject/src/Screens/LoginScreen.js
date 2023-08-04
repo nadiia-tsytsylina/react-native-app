@@ -11,15 +11,18 @@ import {
 } from 'react-native';
 import { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
+import { useDispatch } from 'react-redux';
+import { authLogin } from '../redux/operations';
 
 export default function LoginScreen() {
   const navigation = useNavigation();
-
+  const dispatch = useDispatch();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordVisibility, setPasswordVisibility] = useState(true);
 
   const onLogin = () => {
+    dispatch(authLogin({ email, password }));
     Alert.alert(`Welcome, ${email}`);
     navigation.navigate('Home');
     setEmail('');

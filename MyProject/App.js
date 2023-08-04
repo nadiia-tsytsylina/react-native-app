@@ -1,5 +1,8 @@
 import 'react-native-gesture-handler';
 import React from 'react';
+import { Provider } from 'react-redux';
+import { store, persistor } from './src/redux/store';
+import { PersistGate } from 'redux-persist/integration/react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useFonts } from 'expo-font';
@@ -25,65 +28,73 @@ export default function App() {
   }
 
   return (
-    <View style={styles.container}>
-      <ImageBackground source={ImageBg} style={styles.bg} resizeMode="cover">
-        <NavigationContainer theme={styles.navContainer}>
-          <MainStack.Navigator initialRouteName="Login">
-            <MainStack.Screen
-              name="Login"
-              component={LoginScreen}
-              options={{ headerShown: false }}
-            ></MainStack.Screen>
-            <MainStack.Screen
-              name="Registration"
-              component={RegistrationScreen}
-              options={{ headerShown: false }}
-            />
-            <MainStack.Screen
-              name="Home"
-              component={Home}
-              options={{ headerShown: false }}
-            />
-            <MainStack.Screen
-              name="CommentScreen"
-              component={CommentScreen}
-              options={{
-                title: 'Коментарі',
-                headerStyle: {
-                  backgroundColor: '#ffffff',
-                  shadowColor: 'rgba(0,0,0,0.3)',
-                  height: 88,
-                },
-                headerTintColor: '#212121',
-                headerTitleStyle: {
-                  marginLeft: 60,
-                  fontFamily: 'Roboto-Medium',
-                  fontSize: 22,
-                },
-              }}
-            />
-            <MainStack.Screen
-              name="MapScreen"
-              component={MapScreen}
-              options={{
-                title: 'Мапа',
-                headerStyle: {
-                  backgroundColor: '#ffffff',
-                  shadowColor: 'rgba(0,0,0,0.3)',
-                  height: 88,
-                },
-                headerTintColor: '#212121',
-                headerTitleStyle: {
-                  marginLeft: 80,
-                  fontFamily: 'Roboto-Medium',
-                  fontSize: 22,
-                },
-              }}
-            />
-          </MainStack.Navigator>
-        </NavigationContainer>
-      </ImageBackground>
-    </View>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <View style={styles.container}>
+          <ImageBackground
+            source={ImageBg}
+            style={styles.bg}
+            resizeMode="cover"
+          >
+            <NavigationContainer theme={styles.navContainer}>
+              <MainStack.Navigator initialRouteName="Login">
+                <MainStack.Screen
+                  name="Login"
+                  component={LoginScreen}
+                  options={{ headerShown: false }}
+                ></MainStack.Screen>
+                <MainStack.Screen
+                  name="Registration"
+                  component={RegistrationScreen}
+                  options={{ headerShown: false }}
+                />
+                <MainStack.Screen
+                  name="Home"
+                  component={Home}
+                  options={{ headerShown: false }}
+                />
+                <MainStack.Screen
+                  name="CommentScreen"
+                  component={CommentScreen}
+                  options={{
+                    title: 'Коментарі',
+                    headerStyle: {
+                      backgroundColor: '#ffffff',
+                      shadowColor: 'rgba(0,0,0,0.3)',
+                      height: 88,
+                    },
+                    headerTintColor: '#212121',
+                    headerTitleStyle: {
+                      marginLeft: 60,
+                      fontFamily: 'Roboto-Medium',
+                      fontSize: 22,
+                    },
+                  }}
+                />
+                <MainStack.Screen
+                  name="MapScreen"
+                  component={MapScreen}
+                  options={{
+                    title: 'Мапа',
+                    headerStyle: {
+                      backgroundColor: '#ffffff',
+                      shadowColor: 'rgba(0,0,0,0.3)',
+                      height: 88,
+                    },
+                    headerTintColor: '#212121',
+                    headerTitleStyle: {
+                      marginLeft: 80,
+                      fontFamily: 'Roboto-Medium',
+                      fontSize: 22,
+                    },
+                  }}
+                />
+              </MainStack.Navigator>
+            </NavigationContainer>
+          </ImageBackground>
+        </View>
+      </PersistGate>
+    </Provider>
   );
 }
 

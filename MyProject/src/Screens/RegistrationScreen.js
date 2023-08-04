@@ -15,8 +15,11 @@ import AddIcon from '../Images/add-icon.png';
 import DeleteIcon from '../Images/delete-icon.png';
 import UserPhoto from '../Images/user-photo.jpg';
 import { useNavigation } from '@react-navigation/native';
+import { useDispatch } from 'react-redux';
+import { authRegister } from '../redux/operations';
 
 export default function RegistrationScreen() {
+  const dispatch = useDispatch();
   const navigation = useNavigation();
   const [login, setLogin] = useState('');
   const [email, setEmail] = useState('');
@@ -25,8 +28,9 @@ export default function RegistrationScreen() {
   const [userPhoto, setUserPhoto] = useState(false);
 
   const onRegistrate = () => {
+    dispatch(authRegister({ login, email, password }));
     Alert.alert(`${login}, thank you for registration`);
-    navigation.navigate('Home', { login: login, email: email });
+    navigation.navigate('Home');
     setLogin('');
     setEmail('');
     setPassword('');

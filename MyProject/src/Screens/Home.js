@@ -1,5 +1,7 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useNavigation } from '@react-navigation/native';
+import { useDispatch } from 'react-redux';
+import { authSingOut } from '../redux/operations';
 import { StyleSheet, Pressable, Image } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import PostScreen from './PostsScreen';
@@ -12,8 +14,10 @@ const Tabs = createBottomTabNavigator();
 
 export default function Home() {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   const onLogout = () => {
+    dispatch(authSingOut());
     navigation.navigate('Login');
   };
 

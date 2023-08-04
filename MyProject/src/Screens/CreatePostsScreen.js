@@ -10,21 +10,21 @@ import {
   TouchableWithoutFeedback,
   Pressable,
   Alert,
-  TouchableOpacity,
 } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
+import { useDispatch } from 'react-redux';
+import { addPost } from '../redux/postsSlice';
 import { Camera } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import * as Location from 'expo-location';
-import uuid from 'react-native-uuid';
-import posts from '../Data/postsList';
 import CameraImg from '../Images/camera.png';
 import Map from '../Images/map-pin.png';
 import Trash from '../Images/trash.png';
 
 export default function CreatePostScreen() {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
   const [hasPermission, setHasPermission] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
   const [name, setName] = useState('');
@@ -79,16 +79,14 @@ export default function CreatePostScreen() {
   };
 
   const handleSubmit = () => {
-    const post = {
-      id: uuid.v4(),
-      name: name,
-      place: place,
-      location: location,
-      comments: [],
-      likes: 0,
-      image: { uri: uriImg },
-    };
-    posts.push(post);
+    dispatch(
+      addPost({
+        name: name,
+        place: place,
+        location: location,
+        image: { uri: uriImg },
+      })
+    );
     reset();
     navigation.navigate('PostScreen');
   };

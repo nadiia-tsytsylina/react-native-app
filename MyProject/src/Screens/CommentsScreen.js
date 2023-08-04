@@ -1,5 +1,7 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
-import React, { useState, useEffect } from 'react';
+import { useRoute } from '@react-navigation/native';
+import React, { useState } from 'react';
+import { addComment } from '../redux/postsSlice';
+import { useDispatch } from 'react-redux';
 import {
   View,
   Text,
@@ -17,8 +19,9 @@ import uuid from 'react-native-uuid';
 
 export default function CommentScreen() {
   const {
-    params: { postComments, postImg },
+    params: { postComments, postImg, postId },
   } = useRoute();
+  const dispatch = useDispatch();
   const [comments, setComments] = useState(postComments);
   const [image, setImage] = useState(postImg);
   const [newComment, setNewComment] = useState(null);
@@ -31,13 +34,13 @@ export default function CommentScreen() {
     const min = new Date().getMinutes(); //Current Minutes
     const currentDate =
       date + ' ' + month + ' ' + year + ' ' + hours + ':' + min;
+
     const comment = {
       id: uuid.v4(),
-      avatar: require('../Images/user-photo.jpg'),
       text: newComment,
       date: currentDate,
     };
-    // setComments(...comments, comment);
+    dispatch(addComment({ postId, comment }));
     console.log(comment);
     setNewComment('');
   };

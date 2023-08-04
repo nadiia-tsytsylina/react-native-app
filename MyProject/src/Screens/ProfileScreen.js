@@ -14,8 +14,10 @@ import {
 } from 'react-native';
 import { useState } from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { useSelector, useDispatch } from 'react-redux';
+import { getUser, getPosts } from '../redux/selectors';
+import { authSingOut } from '../redux/operations';
 import Post from '../Components/Post';
-import posts from '../Data/postsList';
 import UserPhoto from '../Images/user-photo.jpg';
 import DeleteIcon from '../Images/delete-icon.png';
 import AddIcon from '../Images/add-icon.png';
@@ -23,8 +25,12 @@ import LogOutIcon from '../Images/log-out.png';
 
 export default function ProfileScreen() {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const user = useSelector(getUser);
+  const posts = useSelector(getPosts);
 
   const onLogout = () => {
+    dispatch(authSingOut());
     navigation.navigate('Login');
   };
 
@@ -47,7 +53,7 @@ export default function ProfileScreen() {
         <Pressable style={styles.logOutBtn} onPress={onLogout}>
           <Image source={LogOutIcon} style={styles.icon} />
         </Pressable>
-        <Text style={styles.userName}>Natali Romanova</Text>
+        <Text style={styles.userName}>{user.login}</Text>
       </View>
       <ScrollView style={styles.mainPostContainer}>
         {posts.map((post) => {

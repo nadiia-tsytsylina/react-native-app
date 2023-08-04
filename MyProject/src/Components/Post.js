@@ -1,5 +1,7 @@
 import { View, StyleSheet, Image, Text, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useDispatch } from 'react-redux';
+import { addLike } from '../redux/postsSlice';
 import Comment from '../Images/comment.png';
 import CommentTrue from '../Images/comment-true.png';
 import Map from '../Images/map-pin.png';
@@ -7,6 +9,11 @@ import Like from '../Images/thumbs.png';
 
 export default function Post({ post }) {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+
+  const onAddLike = () => {
+    dispatch(addLike(post.id));
+  };
 
   return (
     <View key={post.id} style={styles.postContainer}>
@@ -17,6 +24,7 @@ export default function Post({ post }) {
           <Pressable
             onPress={() =>
               navigation.navigate('CommentScreen', {
+                postId: post.id,
                 postComments: post.comments,
                 postImg: post.image,
               })
@@ -34,7 +42,7 @@ export default function Post({ post }) {
               </View>
             )}
           </Pressable>
-          <Pressable onPress={() => console.log('liked')}>
+          <Pressable onPress={onAddLike}>
             <View style={styles.commentContainer}>
               <Image source={Like} />
               <Text style={{ color: '#212121' }}>{post.likes}</Text>
